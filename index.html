@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kripto İz: e-postandan unuttuğun kripto varlıklarını bul</title>
+  <meta name="description" content="Gmail arşivini tarayıp girdiğin kripto projelerini bulur, cüzdanlarındaki bakiyeleri gösterir. Mailler tarayıcından çıkmaz." />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>Kripto İz</h1>
+    <p>E-postalarından girdiğin kripto projelerini bul, cüzdanlarındaki varlıkları tek yerde gör.</p>
+    <p class="privacy">🔒 Mail dosyan bu sayfada, kendi bilgisayarında okunur ve hiçbir sunucuya yüklenmez. Cüzdan listen sadece bu tarayıcıda saklanır.</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>1. E-postaları tara</h2>
+      <div id="drop" class="drop">
+        <p>Gmail'den indirdiğin <code>.mbox</code> dosyasını buraya sürükle ya da</p>
+        <label class="button">Dosya seç<input id="file-input" type="file" accept=".mbox,.eml" multiple hidden /></label>
+      </div>
+      <div id="progress" class="progress" hidden><div id="progress-bar"></div></div>
+      <p id="scan-status" class="muted"></p>
+      <details>
+        <summary>E-postalarımı nasıl indiririm?</summary>
+        <ol>
+          <li><a href="https://takeout.google.com" target="_blank" rel="noopener">takeout.google.com</a> adresini aç.</li>
+          <li>"Tüm seçimleri iptal et"e tıkla, aşağıdan sadece <b>Posta</b>'yı işaretle.</li>
+          <li>"Sonraki adım" → "İndirme bağlantısını e-postayla gönder", "Bir kez dışa aktar", <b>.zip</b>, <b>50 GB</b> → "Dışa aktarma işlemi oluştur".</li>
+          <li>Google'dan gelen maildeki bağlantıdan zip'i indir, ayıkla. <code>Takeout/Posta</code> içindeki <code>.mbox</code> dosyasını buraya ver.</li>
+        </ol>
+        <p class="muted small">Outlook veya başka bir servis kullanıyorsan Thunderbird ile maillerini <code>.mbox</code> ya da <code>.eml</code> olarak dışa aktarabilirsin.</p>
+      </details>
+    </section>
+
+    <section>
+      <h2>2. Bulunan projeler</h2>
+      <div class="row toolbar">
+        <input id="filter" placeholder="Ara (isim, alan adı, konu, etiket)..." autocomplete="off" />
+        <select id="type-filter">
+          <option value="">Tüm türler (bültenler hariç)</option>
+          <option value="proje">Proje</option>
+          <option value="gömülü cüzdan">Gömülü cüzdan (e-posta ile giriş)</option>
+          <option value="borsa">Borsa</option>
+          <option value="bülten">Haber / bülten</option>
+        </select>
+        <select id="tag-filter">
+          <option value="">Tüm etiketler</option>
+          <option value="deposit">deposit</option>
+          <option value="likidite">likidite</option>
+          <option value="stake">stake</option>
+          <option value="vault">vault</option>
+          <option value="çekim">çekim</option>
+          <option value="airdrop">airdrop</option>
+          <option value="testnet">testnet</option>
+          <option value="giriş">giriş kodu</option>
+          <option value="adres">mailde adres geçenler</option>
+        </select>
+        <label class="check"><input type="checkbox" id="show-hidden" /> Gizlenenleri göster</label>
+      </div>
+      <p class="muted small">"Gömülü cüzdan" projelerinde e-postayla giriş yaptığında sana o uygulamaya özel bir cüzdan açılmış olabilir. Uygulamaya tekrar girip adresini kopyala ve buraya ekle.</p>
+      <div id="projects"></div>
+    </section>
+
+    <section>
+      <h2>3. Cüzdanlarım</h2>
+      <form id="wallet-form" class="row">
+        <input id="wallet-address" placeholder="0x... veya Solana adresi" autocomplete="off" />
+        <input id="wallet-label" placeholder="Etiket (ör. Hyperliquid e-posta cüzdanı)" autocomplete="off" />
+        <select id="wallet-project"><option value="">Proje seç (isteğe bağlı)</option></select>
+        <button type="submit">Ekle</button>
+      </form>
+      <p class="muted small">Sadece herkese açık adresleri ekle. Bu site asla özel anahtar veya seed phrase istemez; isteyen her site dolandırıcıdır.</p>
+      <div class="row"><button id="check-all" type="button">Hepsini kontrol et</button></div>
+      <div id="wallets"></div>
+    </section>
+
+    <section>
+      <h2>4. Yedek ve ayarlar</h2>
+      <p class="muted small">Veriler sadece bu tarayıcıda durur. Tarayıcı verilerini silersen ya da başka bilgisayara geçersen yedek dosyasıyla geri yükleyebilirsin.</p>
+      <div class="row">
+        <button id="backup-download" type="button">Yedeği indir</button>
+        <label class="button ghost">Yedek yükle<input id="backup-upload" type="file" accept=".json,application/json" hidden /></label>
+        <button id="reset" type="button" class="ghost danger">Tüm verileri sil</button>
+      </div>
+      <details>
+        <summary>DeFi pozisyonları için Zerion API anahtarı (isteğe bağlı)</summary>
+        <p class="muted small">Tüm zincirlerdeki likidite, stake ve deposit pozisyonlarını bu sayfada görmek için <a href="https://developers.zerion.io" target="_blank" rel="noopener">developers.zerion.io</a> adresinden ücretsiz anahtar alıp buraya yapıştırabilirsin. Anahtar sadece bu tarayıcıda saklanır. Anahtarsız da her cüzdanın yanındaki DeBank linkinden aynı bilgiye bakabilirsin.</p>
+        <div class="row">
+          <input id="zerion-key" type="password" placeholder="zk_dev_..." autocomplete="off" />
+          <button id="zerion-save" type="button">Kaydet</button>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer class="muted small">
+    Açık kaynak: <a href="https://github.com/TurgayAcar49/kripto-iz" target="_blank" rel="noopener">github.com/TurgayAcar49/kripto-iz</a>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

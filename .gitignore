@@ -1,0 +1,5 @@
+data/
+node_modules/
+*.mbox
+*.eml
+kripto-iz-yedek-*.json

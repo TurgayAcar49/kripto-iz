@@ -1,0 +1,15 @@
+{
+  "name": "kripto-iz",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "E-posta arşivinden girdiğin kripto projelerini bulur, cüzdanlarındaki varlıkları gösterir.",
+  "scripts": {
+    "start": "node serve.mjs",
+    "test": "node --test",
+    "scan": "node scripts/scan.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
